@@ -10,7 +10,6 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   return (
     <>
-      <div>Hello "__root"!</div>
       <Outlet />
     </>
   )
