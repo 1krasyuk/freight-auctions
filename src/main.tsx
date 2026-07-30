@@ -15,10 +15,27 @@ declare module "@tanstack/react-router" {
   }
 }
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider>
-      <RouterProvider router={router} />
-    </ThemeProvider>
-  </StrictMode>
-)
+async function enableMocking() {
+  if (!import.meta.env.DEV) {
+    return
+  }
+
+  const { worker } = await import("@/app/mocks/browser")
+
+  return worker.start()
+}
+
+async function main(): Promise<void> {
+  await enableMocking()
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </StrictMode>
+  )
+}
+
+main().catch((error: unknown) => {
+  console.error("Failed to start the application", error)
+})
