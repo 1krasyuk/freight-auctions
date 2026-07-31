@@ -1,6 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute('/')({
+import { auctionListSearchSchema } from "@/pages/auction-list"
+
+export const Route = createFileRoute("/")({
+  validateSearch: auctionListSearchSchema,
   component: RouteComponent,
 })
 
