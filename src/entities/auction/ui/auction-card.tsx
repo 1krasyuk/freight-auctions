@@ -8,7 +8,7 @@ import {
   TruckIcon,
 } from "lucide-react"
 
-import type { AuctionListItem } from "../api/auction-list-query"
+import type { AuctionListItem } from "../api/queries/auction-list-query"
 import { Badge } from "@/shared/ui/badge"
 import {
   Card,
