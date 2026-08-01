@@ -18,6 +18,11 @@ const auctionListRequestSchema = z
   .object({
     page: z.number().int().min(1).optional(),
     per_page: z.number().int().min(1).optional(),
+    is_oldest: z.boolean().optional(),
+    sort: z
+      .record(z.string(), z.enum(["asc", "desc"]))
+      .nullable()
+      .optional(),
     cargo_num: z.string().optional(),
     status: z
       .array(
@@ -35,19 +40,11 @@ const auctionListRequestSchema = z
       )
       .optional(),
     statuses: z.array(z.number().int().min(1).max(7)).optional(),
-    auc_type: z
-      .array(z.enum(["Request", "Up", "Down", "FixPrice"]))
-      .optional(),
+    auc_type: z.array(z.enum(["Request", "Up", "Down", "FixPrice"])).optional(),
     load_city: z.string().optional(),
     unload_city: z.string().optional(),
-    load_date_from: z
-      .string()
-      .refine(isDateTime)
-      .optional(),
-    load_date_to: z
-      .string()
-      .refine(isDateTime)
-      .optional(),
+    load_date_from: z.string().refine(isDateTime).optional(),
+    load_date_to: z.string().refine(isDateTime).optional(),
     is_available: z.boolean().optional(),
     is_bidder: z.boolean().optional(),
     current_price_from: z.number().finite().nullable().optional(),
@@ -229,16 +226,104 @@ function matchesAuction(
   )
 }
 
+type SortDirection = "asc" | "desc"
+
+function toTimestamp(value: string | undefined): number | undefined {
+  if (!value) {
+    return undefined
+  }
+
+  const timestamp = Date.parse(value)
+
+  return Number.isNaN(timestamp) ? undefined : timestamp
+}
+
+function getSortValue(
+  item: AuctionListItem,
+  field: string
+): number | undefined {
+  switch (field) {
+    case "start_time":
+      return toTimestamp(item.trading?.start_time)
+    case "price_per_km":
+      return item.main?.price_per_km ?? undefined
+    case "current_price":
+      return item.trading?.price?.current
+    default:
+      return undefined
+  }
+}
+
+function compareOptionalNumbers(
+  left: number | undefined,
+  right: number | undefined,
+  direction: SortDirection
+): number {
+  if (left === undefined && right === undefined) {
+    return 0
+  }
+
+  if (left === undefined) {
+    return 1
+  }
+
+  if (right === undefined) {
+    return -1
+  }
+
+  const comparison = left - right
+
+  return direction === "asc" ? comparison : -comparison
+}
+
+function sortAuctions(
+  items: AuctionListItem[],
+  requestBody: AuctionListRequest
+): AuctionListItem[] {
+  const sortEntries = Object.entries(requestBody.sort ?? {})
+
+  if (sortEntries.length > 0) {
+    return [...items].sort((left, right) => {
+      for (const [field, direction] of sortEntries) {
+        const comparison = compareOptionalNumbers(
+          getSortValue(left, field),
+          getSortValue(right, field),
+          direction
+        )
+
+        if (comparison !== 0) {
+          return comparison
+        }
+      }
+
+      return 0
+    })
+  }
+
+  const direction = requestBody.is_oldest ? "asc" : "desc"
+
+  return [...items].sort((left, right) =>
+    compareOptionalNumbers(
+      toTimestamp(left.main?.created_at ?? left.main?.cargo_date),
+      toTimestamp(right.main?.created_at ?? right.main?.cargo_date),
+      direction
+    )
+  )
+}
+
 export function createAuctionListResponse(
   items: AuctionListItem[],
   requestBody: AuctionListRequest
 ): AuctionListResponseBase {
   const page = requestBody.page ?? DEFAULT_PAGE
   const perPage = requestBody.per_page ?? DEFAULT_PER_PAGE
-  const filteredItems = items.filter((item) => matchesAuction(item, requestBody))
+  const filteredItems = items.filter((item) =>
+    matchesAuction(item, requestBody)
+  )
+  const sortedItems = sortAuctions(filteredItems, requestBody)
   const total = filteredItems.length
   const startIndex = (page - 1) * perPage
-  const pageItems = filteredItems.slice(startIndex, startIndex + perPage)
+  const pageItems = sortedItems.slice(startIndex, startIndex + perPage)
 
   const meta: AuctionListMeta = {
     current_page: page,

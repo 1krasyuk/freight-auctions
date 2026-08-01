@@ -5,7 +5,7 @@ import type { AuctionListRequest } from "@/entities/auction"
 const DEFAULT_PAGE = 1
 const DEFAULT_PER_PAGE = 20
 
-const TRADING_STATUSES = [
+export const TRADING_STATUSES = [
   "NotParticipating",
   "Leading",
   "Losing",
@@ -17,7 +17,18 @@ const TRADING_STATUSES = [
   "Unknown",
 ] as const
 
-const AUCTION_TYPES = ["Request", "Up", "Down", "FixPrice"] as const
+export const AUCTION_TYPES = ["Request", "Up", "Down", "FixPrice"] as const
+
+export const AUCTION_LIST_SORT_VALUES = [
+  "newest",
+  "oldest",
+  "current-price-asc",
+  "current-price-desc",
+  "price-per-km-asc",
+  "price-per-km-desc",
+] as const
+
+export type AuctionListSort = (typeof AUCTION_LIST_SORT_VALUES)[number]
 
 const DATE_TIME_PATTERN =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(([+-]\d{2}:\d{2})|Z)$/
@@ -102,9 +113,15 @@ const optionalAuctionTypesSearchParam = z
   .preprocess(toArray, z.array(z.enum(AUCTION_TYPES)).min(1).optional())
   .catch(undefined)
 
+const optionalSortSearchParam = z
+  .enum(AUCTION_LIST_SORT_VALUES)
+  .optional()
+  .catch(undefined)
+
 export const auctionListSearchSchema = z.object({
   page: positiveIntegerSearchParam.catch(DEFAULT_PAGE),
   per_page: positiveIntegerSearchParam.catch(DEFAULT_PER_PAGE),
+  sort: optionalSortSearchParam,
   cargo_num: optionalTextSearchParam,
   status: optionalTradingStatusesSearchParam,
   statuses: optionalAuctionStatusesSearchParam,
@@ -121,21 +138,39 @@ export const auctionListSearchSchema = z.object({
 
 export type AuctionListSearch = z.infer<typeof auctionListSearchSchema>
 
+function buildSortRequest(
+  sort: AuctionListSort | undefined
+): Pick<AuctionListRequest, "is_oldest" | "sort"> {
+  switch (sort) {
+    case "oldest":
+      return { is_oldest: true }
+    case "current-price-asc":
+      return { sort: { current_price: "asc" } }
+    case "current-price-desc":
+      return { sort: { current_price: "desc" } }
+    case "price-per-km-asc":
+      return { sort: { price_per_km: "asc" } }
+    case "price-per-km-desc":
+      return { sort: { price_per_km: "desc" } }
+    case "newest":
+      return { is_oldest: false }
+    default:
+      return {}
+  }
+}
+
 export function buildAuctionListRequest(
   search: AuctionListSearch
 ): AuctionListRequest {
   return {
     page: search.page,
     per_page: search.per_page,
-    ...(search.cargo_num === undefined
-      ? {}
-      : { cargo_num: search.cargo_num }),
+    ...buildSortRequest(search.sort),
+    ...(search.cargo_num === undefined ? {} : { cargo_num: search.cargo_num }),
     ...(search.status === undefined ? {} : { status: search.status }),
     ...(search.statuses === undefined ? {} : { statuses: search.statuses }),
     ...(search.auc_type === undefined ? {} : { auc_type: search.auc_type }),
-    ...(search.load_city === undefined
-      ? {}
-      : { load_city: search.load_city }),
+    ...(search.load_city === undefined ? {} : { load_city: search.load_city }),
     ...(search.unload_city === undefined
       ? {}
       : { unload_city: search.unload_city }),
@@ -148,9 +183,7 @@ export function buildAuctionListRequest(
     ...(search.is_available === undefined
       ? {}
       : { is_available: search.is_available }),
-    ...(search.is_bidder === undefined
-      ? {}
-      : { is_bidder: search.is_bidder }),
+    ...(search.is_bidder === undefined ? {} : { is_bidder: search.is_bidder }),
     ...(search.current_price_from === undefined
       ? {}
       : { current_price_from: search.current_price_from }),
