@@ -358,7 +358,7 @@ export function AuctionCard({ auction, currentTime }: AuctionCardProps) {
             </div>
           </div>
           <Separator orientation="vertical" className="my-1 hidden sm:block" />
-          <dl className="mt-3 grid w-full min-w-0 grid-cols-3 divide-x text-center text-[0.6875rem] sm:mt-0 sm:block sm:divide-x-0 sm:divide-y sm:text-sm">
+          <dl className="mt-3 grid w-full min-w-0 grid-cols-3 divide-x text-center text-xs sm:mt-0 sm:block sm:divide-x-0 sm:divide-y sm:text-sm">
             <div className="px-1 sm:px-0 sm:pb-2">
               <dt className="text-muted-foreground">Стартовая</dt>
               <dd className="mt-0.5 font-semibold text-foreground">
@@ -389,13 +389,13 @@ export function AuctionCard({ auction, currentTime }: AuctionCardProps) {
         <div className="flex min-w-0 flex-nowrap items-center gap-1 self-center xl:gap-2">
           <Badge
             variant="outline"
-            className="h-6 px-2 text-[0.6875rem] font-semibold xl:h-7 xl:px-3 xl:text-xs"
+            className="h-6 px-2 text-xs font-semibold xl:h-7 xl:px-3"
           >
             {auctionType ? auctionTypeLabels[auctionType] : "Тип не указан"}
           </Badge>
           <Badge
             variant="secondary"
-            className="h-6 px-2 text-[0.6875rem] font-semibold xl:h-7 xl:px-3 xl:text-xs"
+            className="h-6 px-2 text-xs font-semibold xl:h-7 xl:px-3"
           >
             {auctionStatus
               ? auctionStatusLabels[auctionStatus]
@@ -405,7 +405,7 @@ export function AuctionCard({ auction, currentTime }: AuctionCardProps) {
         {auctionUuid && hasActiveAction ? (
           <Button
             size="sm"
-            className="ml-auto h-7 shrink-0 px-2 text-[0.6875rem] sm:h-8 sm:px-3 sm:text-xs"
+            className="ml-auto h-7 shrink-0 px-2 text-xs sm:h-8 sm:px-3"
             render={
               <Link
                 to="/auctions/$auctionUuid"
@@ -422,7 +422,7 @@ export function AuctionCard({ auction, currentTime }: AuctionCardProps) {
             size="sm"
             variant="secondary"
             disabled
-            className="ml-auto h-7 shrink-0 px-2 text-[0.6875rem] sm:h-8 sm:px-3 sm:text-xs"
+            className="ml-auto h-7 shrink-0 px-2 text-xs sm:h-8 sm:px-3"
           >
             Ставка недоступна
           </Button>
