@@ -1,11 +1,13 @@
-import { queryOptions } from "@tanstack/react-query"
+import { keepPreviousData, queryOptions } from "@tanstack/react-query"
 
 import { api } from "@/shared/api/api"
 import type {
+  AuctionListItem as AuctionListItemDto,
   AuctionListRequest as AuctionListRequestDto,
   AuctionListResponseBase,
 } from "@/shared/api/generated/Api"
 
+export type AuctionListItem = AuctionListItemDto
 export type AuctionListRequest = AuctionListRequestDto
 
 export const auctionListQueryKey = (request: AuctionListRequest) =>
@@ -19,5 +21,6 @@ export function auctionListQueryOptions(request: AuctionListRequest) {
 
       return response.data
     },
+    placeholderData: keepPreviousData,
   })
 }
