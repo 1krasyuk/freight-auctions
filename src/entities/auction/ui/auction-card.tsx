@@ -200,6 +200,10 @@ export function AuctionCard({ auction, currentTime }: AuctionCardProps) {
       ? "Смотреть ставки"
       : "Ставка недоступна"
   const hasActiveAction = Boolean(auctionUuid && (canSetBet || hasOwnBet))
+  const actionTarget =
+    !canSetBet && hasOwnBet
+      ? "/auctions/$auctionUuid/bets"
+      : "/auctions/$auctionUuid"
 
   return (
     <Card className="h-full w-full max-w-full min-w-0 pb-0 text-sm/relaxed shadow-sm transition-shadow [--card-spacing:--spacing(3)] hover:shadow-md sm:[--card-spacing:--spacing(5)]">
@@ -408,7 +412,7 @@ export function AuctionCard({ auction, currentTime }: AuctionCardProps) {
             className="ml-auto h-7 shrink-0 px-2 text-xs sm:h-8 sm:px-3"
             render={
               <Link
-                to="/auctions/$auctionUuid"
+                to={actionTarget}
                 params={{ auctionUuid }}
                 preload="intent"
               />

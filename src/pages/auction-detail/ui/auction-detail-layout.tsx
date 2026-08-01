@@ -45,6 +45,34 @@ export function AuctionDetailLayout() {
       </div>
 
       <AuctionDetailHeader auction={auction} />
+
+      <nav
+        aria-label="Разделы аукциона"
+        className="flex w-fit gap-1 rounded-lg bg-muted p-1"
+      >
+        <Link
+          to="/auctions/$auctionUuid"
+          params={{ auctionUuid }}
+          activeOptions={{ exact: true }}
+          className="rounded-md px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+          activeProps={{
+            className: "bg-background text-foreground shadow-sm",
+          }}
+        >
+          Об аукционе
+        </Link>
+        <Link
+          to="/auctions/$auctionUuid/bets"
+          params={{ auctionUuid }}
+          className="rounded-md px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+          activeProps={{
+            className: "bg-background text-foreground shadow-sm",
+          }}
+        >
+          Ставки
+        </Link>
+      </nav>
+
       <Outlet />
     </main>
   )

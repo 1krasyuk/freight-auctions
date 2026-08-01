@@ -1,7 +1,6 @@
 import {
   AlertCircleIcon,
   ArrowLeftIcon,
-  EyeOffIcon,
   RefreshCwIcon,
   RotateCcwIcon,
 } from "lucide-react"
@@ -18,7 +17,6 @@ import { AuctionDetailSkeleton } from "./auction-detail-skeleton"
 import { AuctionRouteCard } from "./auction-route-card"
 import { AuctionTermsCard } from "./auction-terms-card"
 import { AuctionTradingCard } from "./auction-trading-card"
-import { Alert, AlertDescription, AlertTitle } from "@/shared/ui/alert"
 import { Button } from "@/shared/ui/button"
 import { Card, CardContent } from "@/shared/ui/card"
 
@@ -90,43 +88,27 @@ export function AuctionDetailPage() {
   const hidePrivateData =
     auction.trading.hide_points_address_and_contacts === true
   return (
-    <>
-      {auction.hide_bets_history || auction.trading.hide_bets_history ? (
-        <Alert className="block p-5 text-center sm:p-6">
-          <div className="flex items-center justify-center gap-2">
-            <EyeOffIcon className="size-5" />
-            <AlertTitle className="text-base font-semibold">
-              История ставок скрыта
-            </AlertTitle>
-          </div>
-          <AlertDescription className="mt-1 text-sm">
-            Организатор запретил просмотр истории ставок этого аукциона.
-          </AlertDescription>
-        </Alert>
-      ) : null}
-
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_23rem]">
-        <div className="order-2 space-y-5 lg:order-1">
-          <AuctionRouteCard
-            routes={auction.routes}
-            hidePrivateData={hidePrivateData}
-          />
-          <AuctionCargoCard cargo={auction.cargo} routes={auction.routes} />
-          <AuctionTermsCard
-            organizer={auction.organizer}
-            contacts={auction.contacts}
-            payment={auction.payment}
-            hideContacts={hidePrivateData}
-          />
-        </div>
-        <aside className="order-1 lg:sticky lg:top-5 lg:order-2">
-          <AuctionTradingCard
-            trading={auction.trading}
-            currencyCode={auction.payment.currency_code}
-          />
-        </aside>
+    <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_23rem]">
+      <div className="order-2 space-y-5 lg:order-1">
+        <AuctionRouteCard
+          routes={auction.routes}
+          hidePrivateData={hidePrivateData}
+        />
+        <AuctionCargoCard cargo={auction.cargo} routes={auction.routes} />
+        <AuctionTermsCard
+          organizer={auction.organizer}
+          contacts={auction.contacts}
+          payment={auction.payment}
+          hideContacts={hidePrivateData}
+        />
       </div>
-    </>
+      <aside className="order-1 lg:sticky lg:top-5 lg:order-2">
+        <AuctionTradingCard
+          trading={auction.trading}
+          currencyCode={auction.payment.currency_code}
+        />
+      </aside>
+    </div>
   )
 }
 
