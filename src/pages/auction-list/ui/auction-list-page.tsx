@@ -248,11 +248,11 @@ export function AuctionListPage() {
               >
                 <SelectTrigger
                   aria-label="Сортировка аукционов"
-                  className="col-span-2 row-start-2 h-10 w-full bg-background px-3 text-sm sm:w-50 sm:text-base"
+                  className="col-span-2 row-start-2 h-10 w-full bg-background px-3 text-sm sm:w-70 sm:text-base"
                 >
                   <SelectValue>{selectedSortLabel}</SelectValue>
                 </SelectTrigger>
-                <SelectContent align="start" className="min-w-50">
+                <SelectContent align="start" className="min-w-60">
                   {AUCTION_LIST_SORT_OPTIONS.map((option) => (
                     <SelectItem
                       key={option.value}

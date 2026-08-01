@@ -229,7 +229,7 @@ export function AuctionCard({
             </p>
           </div>
         </div>
-        <dl className="grid min-w-0 grid-cols-2 items-stretch divide-x rounded-lg bg-muted/40 p-2.5 sm:block sm:min-w-50 sm:space-y-2 sm:divide-x-0 sm:bg-transparent sm:p-0 sm:pl-4">
+        <dl className="grid min-w-0 grid-cols-2 items-stretch divide-x rounded-lg bg-muted/40 p-2.5 sm:block sm:min-w-50 sm:space-y-4 sm:divide-x-0 sm:bg-transparent sm:p-0 sm:pl-4">
           <div className="min-w-0 pr-2 sm:pr-0">
             <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
               <span className="sm:hidden">Начало торгов</span>

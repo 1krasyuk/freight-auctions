@@ -53,6 +53,7 @@ const filterFormSchema = z.object({
   unload_city: z.string(),
   load_date_from: z.string(),
   load_date_to: z.string(),
+  is_available: z.enum(["all", "true", "false"]),
   is_bidder: z.enum(["all", "true", "false"]),
   current_price_from: z.string(),
   current_price_to: z.string(),
@@ -91,6 +92,7 @@ function toFormValues(search: AuctionListSearch): FilterFormValues {
     unload_city: search.unload_city ?? "all",
     load_date_from: search.load_date_from ?? "",
     load_date_to: search.load_date_to ?? "",
+    is_available: toBooleanSelectValue(search.is_available),
     is_bidder: toBooleanSelectValue(search.is_bidder),
     current_price_from:
       search.current_price_from === undefined
@@ -130,6 +132,7 @@ function getAdvancedFilterCount(search: AuctionListSearch): number {
     search.status?.length ? true : undefined,
     search.statuses?.length ? true : undefined,
     search.auc_type?.length ? true : undefined,
+    search.is_available === undefined ? undefined : true,
   ].filter(Boolean).length
 }
 
@@ -243,6 +246,7 @@ export function AuctionListFilters({
     onApply({
       page: 1,
       per_page: search.per_page,
+      sort: search.sort,
       cargo_num: values.cargo_num.trim() || undefined,
       load_city: values.load_city === "all" ? undefined : values.load_city,
       unload_city:
@@ -252,6 +256,7 @@ export function AuctionListFilters({
       status: values.status.length > 0 ? values.status : undefined,
       statuses: values.statuses.length > 0 ? values.statuses : undefined,
       auc_type: values.auc_type.length > 0 ? values.auc_type : undefined,
+      is_available: toBooleanFilter(values.is_available),
       is_bidder: toBooleanFilter(values.is_bidder),
       current_price_from: toOptionalNumber(values.current_price_from),
       current_price_to: toOptionalNumber(values.current_price_to),
@@ -263,6 +268,7 @@ export function AuctionListFilters({
     const resetSearch: AuctionListSearch = {
       page: 1,
       per_page: search.per_page,
+      sort: search.sort,
     }
 
     form.reset(toFormValues(resetSearch))
@@ -519,6 +525,55 @@ export function AuctionListFilters({
               {renderFilterControls("mobile")}
 
               <div className="mt-4 border-t pt-4">
+                <Controller
+                  control={form.control}
+                  name="is_available"
+                  render={({ field }) => (
+                    <div className="mb-4 grid gap-2 sm:grid-cols-[auto_16rem] sm:items-center sm:justify-start">
+                      <Label className="text-sm font-semibold">
+                        Доступность ставки
+                      </Label>
+                      <Select
+                        modal={false}
+                        value={field.value}
+                        onValueChange={(value) =>
+                          field.onChange(value ?? "all")
+                        }
+                      >
+                        <SelectTrigger className="h-10 w-full px-3 text-sm">
+                          <SelectValue>
+                            {field.value === "all"
+                              ? "Любая доступность"
+                              : field.value === "true"
+                                ? "Ставка доступна"
+                                : "Ставка недоступна"}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem
+                            value="all"
+                            className={SELECT_ITEM_CLASS_NAME}
+                          >
+                            Любая доступность
+                          </SelectItem>
+                          <SelectItem
+                            value="true"
+                            className={SELECT_ITEM_CLASS_NAME}
+                          >
+                            Ставка доступна
+                          </SelectItem>
+                          <SelectItem
+                            value="false"
+                            className={SELECT_ITEM_CLASS_NAME}
+                          >
+                            Ставка недоступна
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                />
+
                 <div className="grid gap-0 lg:grid-cols-3">
                   <Controller
                     control={form.control}
@@ -640,7 +695,7 @@ export function AuctionListFilters({
                       className="h-9 px-2.5 text-xs sm:h-10 sm:px-4 sm:text-sm"
                       onClick={resetFilters}
                     >
-                      Очистить
+                      Сбросить
                     </Button>
                     <Button
                       type="button"
