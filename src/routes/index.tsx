@@ -1,8 +1,23 @@
-import { createFileRoute } from "@tanstack/react-router"
+import {
+  createFileRoute,
+  type SearchSchemaInput,
+} from "@tanstack/react-router"
 
-import { AuctionListPage, auctionListSearchSchema } from "@/pages/auction-list"
+import {
+  AuctionListPage,
+  auctionListSearchSchema,
+  type AuctionListSearch,
+} from "@/pages/auction-list"
+
+type AuctionListSearchInput = Partial<AuctionListSearch> & SearchSchemaInput
+
+function validateAuctionListSearch(
+  search: AuctionListSearchInput
+): AuctionListSearch {
+  return auctionListSearchSchema.parse(search)
+}
 
 export const Route = createFileRoute("/")({
-  validateSearch: auctionListSearchSchema,
+  validateSearch: validateAuctionListSearch,
   component: AuctionListPage,
 })
