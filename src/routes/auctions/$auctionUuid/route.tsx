@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { auctionDetailQueryOptions } from "@/entities/auction"
 import {
   AuctionDetailError,
-  AuctionDetailPage,
+  AuctionDetailLayout,
   AuctionDetailPending,
 } from "@/pages/auction-detail"
 
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/auctions/$auctionUuid")({
     context.queryClient.ensureQueryData(
       auctionDetailQueryOptions(params.auctionUuid)
     ),
-  component: AuctionDetailPage,
+  component: AuctionDetailLayout,
   pendingComponent: AuctionDetailPending,
   errorComponent: AuctionDetailError,
 })
