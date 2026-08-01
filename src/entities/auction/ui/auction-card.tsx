@@ -1,4 +1,3 @@
-import type { ReactNode } from "react"
 import {
   ArrowRightIcon,
   CalendarDaysIcon,
@@ -7,12 +6,13 @@ import {
   PackageIcon,
   TruckIcon,
 } from "lucide-react"
+import { Link } from "@tanstack/react-router"
 
-import type { AuctionListItem } from "../api/auction-list-query"
+import type { AuctionListItem } from "../api/queries/auction-list-query"
 import { Badge } from "@/shared/ui/badge"
+import { Button } from "@/shared/ui/button"
 import {
   Card,
-  CardAction,
   CardContent,
   CardFooter,
   CardHeader,
@@ -177,14 +177,9 @@ function formatOrganizationName(
 type AuctionCardProps = {
   auction: AuctionListItem
   currentTime: number
-  action?: ReactNode
 }
 
-export function AuctionCard({
-  auction,
-  currentTime,
-  action,
-}: AuctionCardProps) {
+export function AuctionCard({ auction, currentTime }: AuctionCardProps) {
   const auctionType = auction.main?.auc_type
   const auctionStatus = auction.trading?.status
   const tradingStatus = auction.trading?.status_mobile
@@ -194,6 +189,17 @@ export function AuctionCard({
   const lastBet = auction.trading?.your?.last_bet
   const vatLabel = getVatLabel(auction.payment?.form)
   const isUrgent = isEndingSoon(auction.trading?.stop_time, currentTime)
+  const auctionUuid = auction.main?.order_uid
+  const canSetBet = auction.trading?.can_set_bet === true
+  const hasOwnBet = auction.trading?.your?.bet === true
+  const actionLabel = canSetBet
+    ? hasOwnBet
+      ? "Изменить ставку"
+      : "Сделать ставку"
+    : hasOwnBet
+      ? "Смотреть ставки"
+      : "Ставка недоступна"
+  const hasActiveAction = Boolean(auctionUuid && (canSetBet || hasOwnBet))
 
   return (
     <Card className="h-full w-full max-w-full min-w-0 pb-0 text-sm/relaxed shadow-sm transition-shadow [--card-spacing:--spacing(3)] hover:shadow-md sm:[--card-spacing:--spacing(5)]">
@@ -201,7 +207,18 @@ export function AuctionCard({
         <div className="min-w-0">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-wrap sm:gap-3">
             <CardTitle className="text-lg font-bold tracking-tight sm:text-2xl">
-              Заявка № {auction.main?.cargo_num ?? "—"}
+              {auctionUuid ? (
+                <Link
+                  to="/auctions/$auctionUuid"
+                  params={{ auctionUuid }}
+                  preload="intent"
+                  className="rounded-sm transition-colors outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/40"
+                >
+                  Заявка № {auction.main?.cargo_num ?? "—"}
+                </Link>
+              ) : (
+                <>Заявка № {auction.main?.cargo_num ?? "—"}</>
+              )}
             </CardTitle>
             <Badge
               variant={getTradingBadgeVariant(
@@ -256,7 +273,6 @@ export function AuctionCard({
             </p>
           </div>
         </dl>
-        {action ? <CardAction>{action}</CardAction> : null}
       </CardHeader>
 
       <Separator />
@@ -342,7 +358,7 @@ export function AuctionCard({
             </div>
           </div>
           <Separator orientation="vertical" className="my-1 hidden sm:block" />
-          <dl className="mt-3 grid w-full min-w-0 grid-cols-3 divide-x text-center text-[0.6875rem] sm:mt-0 sm:block sm:divide-x-0 sm:divide-y sm:text-sm">
+          <dl className="mt-3 grid w-full min-w-0 grid-cols-3 divide-x text-center text-xs sm:mt-0 sm:block sm:divide-x-0 sm:divide-y sm:text-sm">
             <div className="px-1 sm:px-0 sm:pb-2">
               <dt className="text-muted-foreground">Стартовая</dt>
               <dd className="mt-0.5 font-semibold text-foreground">
@@ -369,28 +385,48 @@ export function AuctionCard({
         </div>
       </CardContent>
 
-      <CardFooter className="-mt-1 flex-nowrap items-center gap-1 border-t !px-3 !py-2 text-muted-foreground sm:-mt-3 sm:justify-between sm:!px-5 xl:gap-3 xl:text-sm">
+      <CardFooter className="-mt-1 flex-nowrap items-center gap-1 border-t px-3! py-2! text-muted-foreground sm:-mt-3 sm:justify-between sm:px-5! xl:gap-3 xl:text-sm">
         <div className="flex min-w-0 flex-nowrap items-center gap-1 self-center xl:gap-2">
           <Badge
             variant="outline"
-            className="h-6 px-2 text-[0.6875rem] font-semibold xl:h-7 xl:px-3 xl:text-xs"
+            className="h-6 px-2 text-xs font-semibold xl:h-7 xl:px-3"
           >
             {auctionType ? auctionTypeLabels[auctionType] : "Тип не указан"}
           </Badge>
           <Badge
             variant="secondary"
-            className="h-6 px-2 text-[0.6875rem] font-semibold xl:h-7 xl:px-3 xl:text-xs"
+            className="h-6 px-2 text-xs font-semibold xl:h-7 xl:px-3"
           >
             {auctionStatus
               ? auctionStatusLabels[auctionStatus]
               : "Статус не указан"}
           </Badge>
         </div>
-        <span className="ml-auto shrink-0 text-[0.625rem] whitespace-nowrap sm:text-xs xl:text-sm">
-          {auction.trading?.is_available
-            ? "Ставка доступна"
-            : "Ставка недоступна"}
-        </span>
+        {auctionUuid && hasActiveAction ? (
+          <Button
+            size="sm"
+            className="ml-auto h-7 shrink-0 px-2 text-xs sm:h-8 sm:px-3"
+            render={
+              <Link
+                to="/auctions/$auctionUuid"
+                params={{ auctionUuid }}
+                preload="intent"
+              />
+            }
+          >
+            {actionLabel}
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            disabled
+            className="ml-auto h-7 shrink-0 px-2 text-xs sm:h-8 sm:px-3"
+          >
+            Ставка недоступна
+          </Button>
+        )}
       </CardFooter>
     </Card>
   )
