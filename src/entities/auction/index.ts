@@ -17,4 +17,5 @@ export {
 export { useAuctionDetail } from "./api/hooks/use-auction-detail"
 export { useAuctionBets } from "./api/hooks/use-auction-bets"
 export { useAuctionList } from "./api/hooks/use-auction-list"
+export { useSetAuctionBet } from "./api/hooks/use-set-auction-bet"
 export { AuctionCard } from "./ui/auction-card"
