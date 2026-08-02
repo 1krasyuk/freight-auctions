@@ -22,6 +22,7 @@ import { Skeleton } from "@/shared/ui/skeleton"
 import {
   getAuctionBetKey,
   getParticipantCount,
+  sortAuctionBetsByPlace,
 } from "../lib/auction-bet-formatters"
 import { AuctionBetCard } from "./auction-bet-card"
 import { AuctionBetsTable } from "./auction-bets-table"
@@ -56,6 +57,7 @@ export function AuctionBetsPage() {
     enabled: !isHistoryHidden,
   })
   const bets = betsQuery.data?.bets ?? []
+  const sortedBets = sortAuctionBetsByPlace(bets)
   const participantCount = getParticipantCount(bets)
   const hidePlace = auction?.trading.hide_places === true
   const canSetBet = auction?.trading.can_set_bet === true
@@ -123,11 +125,11 @@ export function AuctionBetsPage() {
       ) : (
         <>
           <div className="hidden lg:block">
-            <AuctionBetsTable bets={bets} hidePlace={hidePlace} />
+            <AuctionBetsTable bets={sortedBets} hidePlace={hidePlace} />
           </div>
 
           <div className="grid gap-3 lg:hidden">
-            {bets.map((bet, index) => (
+            {sortedBets.map((bet, index) => (
               <AuctionBetCard
                 key={getAuctionBetKey(bet, index)}
                 bet={bet}

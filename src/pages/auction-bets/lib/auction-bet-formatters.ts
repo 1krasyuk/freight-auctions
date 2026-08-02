@@ -65,6 +65,14 @@ export function getParticipantCount(bets: AuctionBet[]): number {
   ).size
 }
 
+export function sortAuctionBetsByPlace(bets: AuctionBet[]): AuctionBet[] {
+  return [...bets].sort(
+    (left, right) =>
+      (left.place ?? Number.POSITIVE_INFINITY) -
+      (right.place ?? Number.POSITIVE_INFINITY)
+  )
+}
+
 export function hasAuctionBetDetails(bet: AuctionBet): boolean {
   return Boolean(bet.transporter_comment?.trim() || bet.cancel_reason?.trim())
 }
