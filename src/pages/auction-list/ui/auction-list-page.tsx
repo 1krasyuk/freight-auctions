@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { AlertCircleIcon, RefreshCwIcon } from "lucide-react"
-import { useNavigate, useSearch } from "@tanstack/react-router"
+import { Link, useNavigate, useSearch } from "@tanstack/react-router"
 
 import { AuctionCard, useAuctionList } from "@/entities/auction"
 import {
@@ -70,14 +70,6 @@ function getPaginationEntries(
   return entries
 }
 
-function getPageHref(page: number): string {
-  const url = new URL(window.location.href)
-
-  url.searchParams.set("page", String(page))
-
-  return `${url.pathname}${url.search}`
-}
-
 export function AuctionListPage() {
   const search = useSearch({ from: "/" })
   const navigate = useNavigate({ from: "/" })
@@ -130,10 +122,6 @@ export function AuctionListPage() {
     },
     [navigate]
   )
-
-  function setPage(page: number) {
-    setSearch({ ...search, page })
-  }
 
   function setPageSize(perPage: number) {
     setSearch({ ...search, page: 1, per_page: perPage })
@@ -312,7 +300,6 @@ export function AuctionListPage() {
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious
-                      href={getPageHref(Math.max(1, currentPage - 1))}
                       text=""
                       aria-label="Предыдущая страница"
                       aria-disabled={currentPage <= 1}
@@ -322,13 +309,15 @@ export function AuctionListPage() {
                           ? "pointer-events-none size-7 p-0! opacity-50"
                           : "size-7 p-0!"
                       }
-                      onClick={(event) => {
-                        event.preventDefault()
-
-                        if (currentPage > 1) {
-                          setPage(currentPage - 1)
-                        }
-                      }}
+                      render={
+                        <Link
+                          to="/"
+                          search={{
+                            ...search,
+                            page: Math.max(1, currentPage - 1),
+                          }}
+                        />
+                      }
                     />
                   </PaginationItem>
 
@@ -336,13 +325,14 @@ export function AuctionListPage() {
                     typeof entry === "number" ? (
                       <PaginationItem key={entry}>
                         <PaginationLink
-                          href={getPageHref(entry)}
                           isActive={entry === currentPage}
                           aria-label={`Страница ${entry}`}
-                          onClick={(event) => {
-                            event.preventDefault()
-                            setPage(entry)
-                          }}
+                          render={
+                            <Link
+                              to="/"
+                              search={{ ...search, page: entry }}
+                            />
+                          }
                         >
                           {entry}
                         </PaginationLink>
@@ -356,7 +346,6 @@ export function AuctionListPage() {
 
                   <PaginationItem>
                     <PaginationNext
-                      href={getPageHref(Math.min(lastPage, currentPage + 1))}
                       text=""
                       aria-label="Следующая страница"
                       aria-disabled={currentPage >= lastPage}
@@ -366,13 +355,15 @@ export function AuctionListPage() {
                           ? "pointer-events-none size-7 p-0! opacity-50"
                           : "size-7 p-0!"
                       }
-                      onClick={(event) => {
-                        event.preventDefault()
-
-                        if (currentPage < lastPage) {
-                          setPage(currentPage + 1)
-                        }
-                      }}
+                      render={
+                        <Link
+                          to="/"
+                          search={{
+                            ...search,
+                            page: Math.min(lastPage, currentPage + 1),
+                          }}
+                        />
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>
