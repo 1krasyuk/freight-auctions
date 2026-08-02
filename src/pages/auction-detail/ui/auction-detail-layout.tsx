@@ -1,17 +1,14 @@
-import { ArrowLeftIcon, MoonIcon, SunIcon } from "lucide-react"
+import { ArrowLeftIcon } from "lucide-react"
 import { Link, Outlet, useParams } from "@tanstack/react-router"
 
-import { useTheme } from "@/app/providers/theme-provider"
 import { useAuctionDetail } from "@/entities/auction"
 import { Button } from "@/shared/ui/button"
-import { Label } from "@/shared/ui/label"
-import { Switch } from "@/shared/ui/switch"
+import { ThemeToggle } from "@/shared/ui/theme-toggle"
 import { AuctionDetailHeader } from "./auction-detail-header"
 import { AuctionDetailPending } from "./auction-detail-page"
 
 export function AuctionDetailLayout() {
   const { auctionUuid } = useParams({ from: "/auctions/$auctionUuid" })
-  const { theme, setTheme } = useTheme()
   const auctionQuery = useAuctionDetail(auctionUuid)
   const auction = auctionQuery.data
 
@@ -29,19 +26,7 @@ export function AuctionDetailLayout() {
         >
           <ArrowLeftIcon />К списку аукционов
         </Button>
-        <Label className="flex shrink-0 items-center gap-2 rounded-full border bg-background/70 px-2 py-2 shadow-sm backdrop-blur-sm sm:px-3">
-          <SunIcon className="size-4 dark:text-muted-foreground" />
-          <Switch
-            aria-label="Тёмная тема"
-            checked={
-              theme === "dark" ||
-              (theme === "system" &&
-                window.matchMedia("(prefers-color-scheme: dark)").matches)
-            }
-            onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
-          />
-          <MoonIcon className="size-4 text-muted-foreground dark:text-foreground" />
-        </Label>
+        <ThemeToggle />
       </div>
 
       <AuctionDetailHeader auction={auction} />

@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
-import { AlertCircleIcon, MoonIcon, RefreshCwIcon, SunIcon } from "lucide-react"
+import { AlertCircleIcon, RefreshCwIcon } from "lucide-react"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 
-import { useTheme } from "@/app/providers/theme-provider"
 import { AuctionCard, useAuctionList } from "@/entities/auction"
 import {
   buildAuctionListRequest,
@@ -14,7 +13,6 @@ import { AuctionListSkeleton } from "./auction-list-skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/shared/ui/alert"
 import { Button } from "@/shared/ui/button"
 import { Card, CardContent } from "@/shared/ui/card"
-import { Label } from "@/shared/ui/label"
 import {
   Pagination,
   PaginationContent,
@@ -31,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select"
-import { Switch } from "@/shared/ui/switch"
+import { ThemeToggle } from "@/shared/ui/theme-toggle"
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50] as const
 
@@ -83,7 +81,6 @@ function getPageHref(page: number): string {
 export function AuctionListPage() {
   const search = useSearch({ from: "/" })
   const navigate = useNavigate({ from: "/" })
-  const { theme, setTheme } = useTheme()
   const [currentTime, setCurrentTime] = useState(Date.now)
   const request = buildAuctionListRequest(search)
   const auctionsQuery = useAuctionList(request)
@@ -150,21 +147,7 @@ export function AuctionListPage() {
             <p className="sm:xl text-sm font-bold tracking-wider text-primary">
               Умный Логист
             </p>
-            <Label className="flex shrink-0 items-center gap-2 rounded-full border bg-background/70 px-2 py-2 shadow-sm backdrop-blur-sm sm:px-3">
-              <SunIcon className="size-4 dark:text-muted-foreground" />
-              <Switch
-                aria-label="Тёмная тема"
-                checked={
-                  theme === "dark" ||
-                  (theme === "system" &&
-                    window.matchMedia("(prefers-color-scheme: dark)").matches)
-                }
-                onCheckedChange={(checked) =>
-                  setTheme(checked ? "dark" : "light")
-                }
-              />
-              <MoonIcon className="size-4 text-muted-foreground dark:text-foreground" />
-            </Label>
+            <ThemeToggle />
           </div>
           <div className="mt-3 max-w-3xl">
             <h1 className="text-3xl font-bold tracking-tight lg:text-4xl">

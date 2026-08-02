@@ -1,13 +1,11 @@
-import { ArrowLeftIcon, MoonIcon, SunIcon } from "lucide-react"
+import { ArrowLeftIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 
-import { useTheme } from "@/app/providers/theme-provider"
 import { Button } from "@/shared/ui/button"
 import { Card, CardContent, CardHeader } from "@/shared/ui/card"
-import { Label } from "@/shared/ui/label"
 import { Separator } from "@/shared/ui/separator"
 import { Skeleton } from "@/shared/ui/skeleton"
-import { Switch } from "@/shared/ui/switch"
+import { ThemeToggle } from "@/shared/ui/theme-toggle"
 
 const cardClassName =
   "[--card-spacing:--spacing(5)] sm:[--card-spacing:--spacing(6)]"
@@ -93,8 +91,6 @@ function TradingSkeleton() {
 }
 
 export function AuctionDetailSkeleton() {
-  const { theme, setTheme } = useTheme()
-
   return (
     <main className="mx-auto min-h-screen w-full max-w-7xl space-y-5 px-4 py-5 sm:px-6 sm:py-7">
       <div className="flex items-center justify-between gap-4">
@@ -105,19 +101,7 @@ export function AuctionDetailSkeleton() {
         >
           <ArrowLeftIcon />К списку аукционов
         </Button>
-        <Label className="flex shrink-0 items-center gap-2 rounded-full border bg-background/70 px-2 py-2 shadow-sm backdrop-blur-sm sm:px-3">
-          <SunIcon className="size-4 dark:text-muted-foreground" />
-          <Switch
-            aria-label="Тёмная тема"
-            checked={
-              theme === "dark" ||
-              (theme === "system" &&
-                window.matchMedia("(prefers-color-scheme: dark)").matches)
-            }
-            onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
-          />
-          <MoonIcon className="size-4 text-muted-foreground dark:text-foreground" />
-        </Label>
+        <ThemeToggle />
       </div>
 
       <header className="rounded-2xl border bg-linear-to-br from-card via-card to-primary/8 p-5 shadow-sm sm:p-7">
