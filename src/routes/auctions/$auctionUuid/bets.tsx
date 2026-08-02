@@ -1,4 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router"
+import {
+  createFileRoute,
+  type SearchSchemaInput,
+} from "@tanstack/react-router"
 
 import {
   auctionBetsQueryOptions,
@@ -8,9 +11,20 @@ import {
   AuctionBetsError,
   AuctionBetsPage,
   AuctionBetsPending,
+  auctionBetsSearchSchema,
+  type AuctionBetsSearch,
 } from "@/pages/auction-bets"
 
+type AuctionBetsSearchInput = Partial<AuctionBetsSearch> & SearchSchemaInput
+
+function validateAuctionBetsSearch(
+  search: AuctionBetsSearchInput
+): AuctionBetsSearch {
+  return auctionBetsSearchSchema.parse(search)
+}
+
 export const Route = createFileRoute("/auctions/$auctionUuid/bets")({
+  validateSearch: validateAuctionBetsSearch,
   loader: async ({ context, params }) => {
     const auction = await context.queryClient.ensureQueryData(
       auctionDetailQueryOptions(params.auctionUuid)
