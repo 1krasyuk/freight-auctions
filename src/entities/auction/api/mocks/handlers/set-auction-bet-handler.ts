@@ -8,12 +8,15 @@ import {
 import { setAuctionBet } from "../set-auction-bet"
 import { auctionStore } from "../store"
 
-function createValidationResponse(message: string) {
+function createValidationResponse(
+  message: string,
+  field: "price" | null = "price"
+) {
   const problem = {
     code: "validation_failed",
-    title: "Ошибка валидации",
-    message: "Запрос содержит некорректные поля.",
-    errors: [{ field: "price", message }],
+    title: field === null ? "Не удалось установить ставку" : "Ошибка валидации",
+    message: field === null ? message : "Запрос содержит некорректные поля.",
+    errors: field === null ? [] : [{ field, message }],
   } satisfies ValidationProblem
 
   return HttpResponse.json<ValidationProblem>(problem, {
@@ -66,7 +69,7 @@ export const setAuctionBetHandler = http.post<
   const result = setAuctionBet(record, { price: body.price })
 
   if (!result.success) {
-    return createValidationResponse(result.message)
+    return createValidationResponse(result.message, result.field)
   }
 
   return new HttpResponse(null, { status: 200 })

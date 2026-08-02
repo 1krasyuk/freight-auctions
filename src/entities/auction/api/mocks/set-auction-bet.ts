@@ -6,7 +6,8 @@ import {
 import type { MockAuctionRecord } from "./types"
 
 type SetAuctionBetResult =
-  { success: true } | { success: false; message: string }
+  | { success: true }
+  | { success: false; message: string; field: "price" | null }
 
 function isValidStep(price: number, min: number | null, step: number): boolean {
   const stepCount = (price - (min ?? 0)) / step
@@ -22,8 +23,20 @@ export function setAuctionBet(
   record: MockAuctionRecord,
   { price }: SetBetRequest
 ): SetAuctionBetResult {
+  if (record.detail.trading.can_set_bet !== true) {
+    return {
+      success: false,
+      message: "Ставка для этого аукциона сейчас недоступна.",
+      field: null,
+    }
+  }
+
   if (!Number.isFinite(price) || price <= 0) {
-    return { success: false, message: "Цена должна быть числом больше 0." }
+    return {
+      success: false,
+      message: "Цена должна быть числом больше 0.",
+      field: "price",
+    }
   }
 
   const priceLimits = record.detail.trading.price
@@ -35,6 +48,7 @@ export function setAuctionBet(
     return {
       success: false,
       message: `Цена должна быть не меньше ${min}.`,
+      field: "price",
     }
   }
 
@@ -42,6 +56,7 @@ export function setAuctionBet(
     return {
       success: false,
       message: `Цена должна быть не больше ${max}.`,
+      field: "price",
     }
   }
 
@@ -49,6 +64,7 @@ export function setAuctionBet(
     return {
       success: false,
       message: `Цена должна соответствовать шагу ${step}.`,
+      field: "price",
     }
   }
 
