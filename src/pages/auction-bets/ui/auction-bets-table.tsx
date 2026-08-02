@@ -73,19 +73,17 @@ function AuctionBetsTableRow({
         </p>
       </TableCell>
       <TableCell className="px-4 py-4">
-        <span className="inline-flex items-center gap-2 whitespace-nowrap">
-          <Clock3Icon className="size-4 shrink-0 text-primary" />
-          {createdAt ? (
-            <>
-              <span className="text-base font-semibold">{createdAt.time}</span>
-              <span className="text-xs text-muted-foreground">
-                {createdAt.date}
-              </span>
-            </>
-          ) : (
-            <span className="text-sm">Не указано</span>
-          )}
-        </span>
+        {createdAt ? (
+          <span className="flex flex-col whitespace-nowrap">
+            <span className="text-base font-semibold">{createdAt.date}</span>
+            <span className="inline-flex items-center gap-1.5 text-base text-foreground">
+              <Clock3Icon className="size-4 shrink-0 text-primary" />
+              {createdAt.time}
+            </span>
+          </span>
+        ) : (
+          <span className="text-sm">Не указано</span>
+        )}
       </TableCell>
       <TableCell className="px-4 py-4 text-center">
         <AuctionBetStatusBadge bet={bet} />
@@ -112,7 +110,7 @@ export function AuctionBetsTable({ bets, hidePlace }: AuctionBetsTableProps) {
             ) : null}
             <TableHead className="w-[25%] px-4">Участник</TableHead>
             <TableHead className="w-[21%] px-4">Ставка</TableHead>
-            <TableHead className="w-[18%] px-4">Время ставки</TableHead>
+            <TableHead className="w-[18%] px-4">Дата и время</TableHead>
             <TableHead className="w-[15%] px-4 text-center">Статус</TableHead>
             <TableHead className="w-28 px-2 text-center">Детали</TableHead>
           </TableRow>

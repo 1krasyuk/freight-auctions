@@ -200,10 +200,7 @@ export function AuctionCard({ auction, currentTime }: AuctionCardProps) {
       ? "Смотреть ставки"
       : "Ставка недоступна"
   const hasActiveAction = Boolean(auctionUuid && (canSetBet || hasOwnBet))
-  const actionTarget =
-    !canSetBet && hasOwnBet
-      ? "/auctions/$auctionUuid/bets"
-      : "/auctions/$auctionUuid"
+  const actionTarget = "/auctions/$auctionUuid/bets"
 
   return (
     <Card className="h-full w-full max-w-full min-w-0 pb-0 text-sm/relaxed shadow-sm transition-shadow [--card-spacing:--spacing(3)] hover:shadow-md sm:[--card-spacing:--spacing(5)]">
@@ -409,11 +406,12 @@ export function AuctionCard({ auction, currentTime }: AuctionCardProps) {
         {auctionUuid && hasActiveAction ? (
           <Button
             size="sm"
-            className="ml-auto h-7 shrink-0 px-2 text-xs sm:h-8 sm:px-3"
+            className="ml-auto h-8 shrink-0 px-3 text-sm sm:h-9 sm:px-4"
             render={
               <Link
                 to={actionTarget}
                 params={{ auctionUuid }}
+                search={canSetBet ? { setBet: true } : {}}
                 preload="intent"
               />
             }
@@ -426,7 +424,7 @@ export function AuctionCard({ auction, currentTime }: AuctionCardProps) {
             size="sm"
             variant="secondary"
             disabled
-            className="ml-auto h-7 shrink-0 px-2 text-xs sm:h-8 sm:px-3"
+            className="ml-auto h-8 shrink-0 px-3 text-sm sm:h-9 sm:px-4"
           >
             Ставка недоступна
           </Button>
