@@ -111,7 +111,7 @@ Route-файлы выполняют валидацию search params, запус
 
 ## API, OpenAPI и MSW
 
-Источник правды — [`openapi/openapi.auctions.v0.json`](./openapi/openapi.auctions.v0.json). Generated-файл не редактируется вручную.
+Источник данных — [`openapi/openapi.auctions.v0.json`](./openapi/openapi.auctions.v0.json). Generated-файл не редактируется вручную.
 
 Используются четыре endpoint:
 
