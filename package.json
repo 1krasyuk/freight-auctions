@@ -10,7 +10,9 @@
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "api:generate": "swagger-typescript-api generate --path ./openapi/openapi.auctions.v0.json --output ./src/shared/api/generated --axios"
+    "api:generate": "swagger-typescript-api generate --path ./openapi/openapi.auctions.v0.json --output ./src/shared/api/generated --axios",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -53,7 +55,8 @@
     "swagger-typescript-api": "^13.12.6",
     "typescript": "~6",
     "typescript-eslint": "^8",
-    "vite": "^8"
+    "vite": "^8",
+    "vitest": "^4.1.10"
   },
   "msw": {
     "workerDirectory": [
